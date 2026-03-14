@@ -171,27 +171,42 @@ input[type=range] { flex: 1; accent-color: var(--accent); }
 .gloss-term { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
 .gloss-def { font-size: 12px; color: var(--text2); line-height: 1.6; }
 
-/* GITHUB DEPLOY */
-.deploy-steps { display: flex; flex-direction: column; gap: 12px; }
-.step-row { display: flex; gap: 16px; align-items: flex-start; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px; }
-.step-num { font-family: var(--font-head); font-size: 1.4rem; font-weight: 800; color: var(--accent2); min-width: 32px; }
-.step-content h4 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.step-content p, .step-content li { font-size: 13px; color: var(--text2); line-height: 1.7; }
-.step-content ul { padding-left: 18px; margin-top: 4px; }
-.code-block { font-family: var(--font-mono); font-size: 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; margin-top: 8px; color: var(--teal); overflow-x: auto; white-space: pre; }
 
 /* FOOTER */
 footer { border-top: 1px solid var(--border); padding: 32px; text-align: center; color: var(--text3); font-size: 13px; }
 footer span { color: var(--accent2); }
 
 /* RESPONSIVE */
-@media (max-width: 640px) {
-  nav { padding: 0 16px; }
-  section { padding: 60px 16px; }
+/* TABLET */
+@media (max-width: 900px) {
+  nav { gap: 2px; }
+  .nav-link { padding: 6px 8px; font-size: 12px; }
   .overview-grid { grid-template-columns: repeat(2,1fr); }
+  .qa-cards { grid-template-columns: 1fr 1fr; }
+  .gloss-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+  nav { padding: 0 12px; height: auto; flex-wrap: wrap; padding: 8px 12px; gap: 4px; }
+  .nav-logo { width: 100%; margin-bottom: 4px; }
+  .nav-link { font-size: 11px; padding: 4px 8px; }
+  section { padding: 48px 16px; }
+  .hero { padding: 100px 16px 48px; }
+  .hero-stats { gap: 20px; }
+  .stat-num { font-size: 1.6rem; }
+  .overview-grid { grid-template-columns: repeat(2,1fr); }
+  .qa-cards { grid-template-columns: 1fr; }
   .qa-detail-grid { grid-template-columns: 1fr; }
+  .gloss-grid { grid-template-columns: 1fr; }
   .rag-diagram { flex-direction: column; align-items: stretch; }
   .rag-arrow { transform: rotate(90deg); text-align: center; }
+  .demo-row { flex-wrap: wrap; }
+  .demo-row label { min-width: unset; width: 100%; }
+  .chart-wrap { padding: 16px; }
+  .demo-wrap { padding: 16px; }
+  .cta-row { flex-direction: column; align-items: center; }
+  .btn-primary, .btn-outline { width: 100%; text-align: center; }
 }
 </style>
 </head>
@@ -204,7 +219,6 @@ footer span { color: var(--accent2); }
   <a class="nav-link" href="#quality">Quality</a>
   <a class="nav-link" href="#quiz">Quiz</a>
   <a class="nav-link" href="#glossary">Glossary</a>
-  <a class="nav-link" href="#deploy">Deploy</a>
 </nav>
 
 <!-- HERO -->
@@ -316,14 +330,6 @@ footer span { color: var(--accent2); }
 </section>
 <div class="section-divider"></div>
 
-<!-- DEPLOY GUIDE -->
-<section id="deploy">
-  <div class="section-label">How to host this</div>
-  <h2>Deploy to GitHub Pages</h2>
-  <p style="color:var(--text2);margin-bottom:28px;font-size:15px;">Follow these steps to host this site for free on GitHub Pages and connect your custom domain <strong style="color:var(--accent2)">istqbctgenaiprep.com</strong>.</p>
-  <div class="deploy-steps" id="deploySteps"></div>
-</section>
-<div class="section-divider"></div>
 
 <footer>
   Built for the <span>ISTQB CT-GenAI</span> community · Free forever · Not affiliated with ISTQB®
@@ -561,20 +567,6 @@ const GLOSSARY = [
   {term:"Model drift",cat:"CI/CD",catC:"rgba(74,222,128,0.12)",catT:"#4ade80",def:"When a model's output distribution changes over time due to model updates, data shifts, or serving changes."}
 ];
 
-const DEPLOY_STEPS = [
-  { n:1, title:"Download this file", body:"Save this page as <code>index.html</code> on your computer. That's the entire site — one self-contained file.", code:null },
-  { n:2, title:"Create a GitHub repository", body:"Go to <strong>github.com</strong> → New repository → name it <strong>istqbctgenaiprep.com</strong> → set to Public → Create.", code:null },
-  { n:3, title:"Upload index.html", body:"In your new repo, click <strong>Add file → Upload files</strong> → drag your index.html in → Commit changes.", code:null },
-  { n:4, title:"Enable GitHub Pages", body:"Go to repo <strong>Settings → Pages</strong> → Source: <strong>Deploy from a branch</strong> → Branch: <strong>main</strong>, folder: <strong>/ (root)</strong> → Save. Your site will be live at <code>https://&lt;yourname&gt;.github.io/istqbctgenaiprep.com</code> within 2 minutes.", code:null },
-  { n:5, title:"Buy the domain", body:"Purchase <strong>istqbctgenaiprep.com</strong> from Namecheap, GoDaddy, or Google Domains (~$10/year).", code:null },
-  { n:6, title:"Add custom domain to GitHub Pages", body:"In repo Settings → Pages → Custom domain → enter <strong>istqbctgenaiprep.com</strong> → Save. GitHub will create a CNAME file automatically.", code:null },
-  { n:7, title:"Configure DNS at your registrar", body:"Add these DNS records at your domain registrar:", code:`A     @    185.199.108.153
-A     @    185.199.109.153
-A     @    185.199.110.153
-A     @    185.199.111.153
-CNAME www  &lt;yourname&gt;.github.io` },
-  { n:8, title:"Enable HTTPS", body:"Back in GitHub Pages settings → check <strong>Enforce HTTPS</strong> (available after DNS propagates, ~10–60 min). Your site will be live at <strong>https://istqbctgenaiprep.com</strong>.", code:null }
-];
 
 // ── WEIGHT CHART ──────────────────────────────────────────────────────────────
 
@@ -834,17 +826,6 @@ function filterGloss(v){
 }
 renderGloss(GLOSSARY);
 
-// ── DEPLOY STEPS ──────────────────────────────────────────────────────────────
-
-document.getElementById('deploySteps').innerHTML=DEPLOY_STEPS.map(s=>`
-  <div class="step-row">
-    <div class="step-num">${s.n}</div>
-    <div class="step-content">
-      <h4>${s.title}</h4>
-      <p>${s.body}</p>
-      ${s.code?`<div class="code-block">${s.code}</div>`:''}
-    </div>
-  </div>`).join('');
 </script>
 </body>
 </html>
