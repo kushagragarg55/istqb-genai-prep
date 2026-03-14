@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 1 – GenAI Foundations for Testers | CT-GenAI Prep</title>
+<meta name="description" content="Master Chapter 1 of ISTQB CT-GenAI: LLMs, tokenization, temperature, embeddings, RAG pipelines, agentic tool-use, and diffusion models.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#0a0a0f; --bg2:#111118; --bg3:#18181f; --bg4:#1e1e28;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
+  --text:#e8e6f0; --text2:#9b98b0; --text3:#5e5b72;
+  --accent:#7c6fff; --accent2:#a594ff;
+  --teal:#2dd4bf; --amber:#f59e0b; --red:#f87171; --green:#4ade80; --pink:#f472b6;
+  --font-head:'Syne',sans-serif; --font-body:'Inter',sans-serif; --font-mono:'IBM Plex Mono',monospace;
+  --r:10px; --r-lg:16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,15,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 32px;height:54px;gap:8px;}
+.nav-back{font-size:13px;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;}
+.nav-back:hover{color:var(--accent2);}
+.nav-title{font-family:var(--font-head);font-size:14px;font-weight:700;margin-left:12px;color:var(--text);}
+.nav-progress{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.np-bar{width:120px;height:3px;background:var(--bg3);border-radius:2px;}
+.np-fill{height:3px;background:var(--accent);border-radius:2px;width:0%;transition:width .3s;}
+.np-pct{font-family:var(--font-mono);font-size:11px;color:var(--text3);}
+
+/* SIDEBAR */
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh;padding-top:54px;}
+aside{position:sticky;top:54px;height:calc(100vh - 54px);overflow-y:auto;border-right:1px solid var(--border);padding:24px 16px;}
+.aside-label{font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;padding-left:8px;}
+.aside-link{display:block;font-size:13px;color:var(--text2);padding:7px 10px;border-radius:6px;text-decoration:none;transition:all .15s;border-left:2px solid transparent;}
+.aside-link:hover{color:var(--text);background:var(--bg3);}
+.aside-link.active{color:var(--accent2);border-left-color:var(--accent2);background:rgba(124,111,255,0.06);}
+
+/* MAIN */
+main{padding:48px 56px 100px;}
+.chapter-hero{margin-bottom:56px;}
+.ch-eyebrow{font-family:var(--font-mono);font-size:11px;color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.ch-eyebrow::before{content:'';width:24px;height:1px;background:var(--accent2);}
+h1{font-family:var(--font-head);font-size:clamp(2rem,4vw,3rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:16px;}
+h1 span{color:var(--accent2);}
+.ch-intro{font-size:1.05rem;color:var(--text2);max-width:640px;line-height:1.8;margin-bottom:28px;}
+.ch-meta{display:flex;gap:20px;flex-wrap:wrap;}
+.ch-badge{font-size:12px;font-family:var(--font-mono);padding:5px 14px;border-radius:20px;border:1px solid var(--border2);color:var(--text2);}
+.ch-badge span{color:var(--accent2);}
+
+/* TOPIC SECTIONS */
+.topic{margin-bottom:80px;scroll-margin-top:80px;}
+.topic-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;}
+.topic-num{font-family:var(--font-head);font-size:3rem;font-weight:800;color:var(--border2);line-height:1;flex-shrink:0;margin-top:-4px;}
+.topic-title-wrap{}
+h2{font-family:var(--font-head);font-size:1.6rem;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+.topic-sub{font-size:14px;color:var(--text3);font-family:var(--font-mono);}
+.prose{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:20px;max-width:720px;}
+.prose strong{color:var(--text);}
+.callout{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--r);padding:14px 18px;font-size:14px;color:var(--text2);line-height:1.7;margin:16px 0;}
+.callout strong{color:var(--text);}
+.callout.warn{border-left-color:var(--amber);}
+.callout.tip{border-left-color:var(--teal);}
+.callout.danger{border-left-color:var(--red);}
+
+/* INTERACTIVE CARDS */
+.interactive-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;margin:20px 0;}
+.ic-title{font-family:var(--font-head);font-size:1rem;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.ic-title::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent);display:block;}
+.ic-sub{font-size:12px;font-family:var(--font-mono);color:var(--text3);margin-bottom:20px;}
+
+/* RANGE CONTROLS */
+.ctrl-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.ctrl-row label{font-size:13px;color:var(--text2);min-width:110px;}
+input[type=range]{flex:1;accent-color:var(--accent);cursor:pointer;}
+.ctrl-val{font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--accent2);min-width:44px;text-align:right;}
+.output-note{font-size:13px;color:var(--text2);padding:10px 14px;background:var(--bg3);border-radius:var(--r);margin-top:10px;line-height:1.6;border-left:2px solid var(--accent);}
+
+/* TOKEN VISUALISER */
+.token-row{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0;}
+.tok{font-size:13px;font-family:var(--font-mono);padding:4px 10px;border-radius:6px;border:1px solid var(--border2);color:var(--text2);cursor:pointer;transition:all .15s;position:relative;}
+.tok:hover{border-color:var(--accent);color:var(--accent2);}
+.tok.selected{background:rgba(124,111,255,0.15);border-color:var(--accent);color:var(--accent2);}
+.tok-id{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:9px;font-family:var(--font-mono);color:var(--text3);white-space:nowrap;}
+.token-info{background:var(--bg3);border-radius:var(--r);padding:12px 16px;font-size:13px;color:var(--text2);line-height:1.7;margin-top:8px;min-height:52px;}
+
+/* EMBEDDING VIZ */
+#embCanvas{width:100%;border-radius:var(--r);cursor:crosshair;}
+.emb-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* RAG STEPPER */
+.rag-steps{display:flex;gap:0;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;}
+.rag-step{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:0;}
+.rag-node{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:12px 14px;min-width:110px;text-align:center;cursor:pointer;transition:all .2s;}
+.rag-node:hover,.rag-node.active{border-color:var(--accent);background:rgba(124,111,255,0.08);}
+.rag-node.active .rn-title{color:var(--accent2);}
+.rag-node.fail{border-color:var(--red);background:rgba(248,113,113,0.06);}
+.rag-node.fail .rn-title{color:var(--red);}
+.rn-num{font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:4px;}
+.rn-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.rn-sub{font-size:11px;color:var(--text3);}
+.rag-arr{display:flex;align-items:center;padding:0 4px;color:var(--text3);font-size:16px;flex-shrink:0;margin-top:-20px;}
+.rag-detail-box{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:16px 20px;font-size:14px;color:var(--text2);line-height:1.7;}
+.rag-detail-box h4{font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.failure-list{list-style:none;margin-top:8px;display:flex;flex-direction:column;gap:4px;}
+.failure-list li{font-size:13px;color:var(--text2);padding-left:18px;position:relative;}
+.failure-list li::before{content:'✗';position:absolute;left:0;color:var(--red);font-size:11px;}
+.test-list li::before{content:'✓';color:var(--teal);}
+
+/* AGENT STEPPER */
+.agent-steps-nav{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.ast-btn{font-size:12px;font-family:var(--font-mono);padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;transition:all .15s;}
+.ast-btn:hover{border-color:var(--border2);color:var(--text2);}
+.ast-btn.active{background:rgba(124,111,255,0.12);border-color:var(--accent);color:var(--accent2);}
+.agent-panel{background:var(--bg3);border-radius:var(--r);padding:18px;}
+.ap-label{font-size:11px;font-family:var(--font-mono);padding:2px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;}
+.ap-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;}
+.ap-body{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:10px;}
+.ap-code{font-family:var(--font-mono);font-size:12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 14px;color:var(--teal);white-space:pre-wrap;}
+.ap-risk{font-size:13px;color:var(--red);background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:6px;padding:8px 12px;margin-top:8px;}
+
+/* MODEL TYPE CARDS */
+.model-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0;}
+.model-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;cursor:pointer;transition:all .2s;}
+.model-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.mc-icon{font-size:24px;margin-bottom:10px;}
+.mc-title{font-family:var(--font-head);font-size:1rem;font-weight:700;margin-bottom:6px;}
+.mc-def{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:10px;}
+.mc-example{font-size:12px;font-family:var(--font-mono);color:var(--text3);}
+.mc-exam{font-size:12px;margin-top:10px;padding:6px 10px;background:rgba(124,111,255,0.08);border-radius:6px;color:var(--accent2);line-height:1.5;}
+
+/* QUIZ */
+.quiz-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;}
+.q-prog-bg{height:3px;background:var(--bg3);border-radius:2px;margin-bottom:20px;}
+.q-prog-fill{height:3px;background:var(--accent);border-radius:2px;transition:width .4s;}
+.q-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.k-pill{font-size:11px;font-family:var(--font-mono);padding:3px 10px;border-radius:20px;}
+.q-scenario{font-size:14px;color:var(--text2);background:var(--bg3);padding:14px 18px;border-radius:var(--r);margin-bottom:14px;border-left:3px solid var(--border2);line-height:1.7;}
+.q-text{font-size:16px;font-weight:500;color:var(--text);line-height:1.6;margin-bottom:16px;}
+.q-opts{display:flex;flex-direction:column;gap:8px;}
+.q-opt{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border:1px solid var(--border2);border-radius:var(--r);cursor:pointer;font-size:14px;color:var(--text2);line-height:1.5;transition:all .12s;}
+.q-opt:hover:not(.locked){border-color:var(--accent);background:rgba(124,111,255,0.06);color:var(--text);}
+.q-opt.correct{border-color:var(--teal);background:rgba(45,212,191,0.08);color:var(--teal);}
+.q-opt.wrong{border-color:var(--red);background:rgba(248,113,113,0.08);color:var(--red);}
+.q-opt.locked{cursor:default;}
+.opt-l{font-family:var(--font-mono);font-size:12px;min-width:18px;flex-shrink:0;margin-top:2px;}
+.q-exp{display:none;margin-top:12px;padding:14px 18px;background:rgba(124,111,255,0.07);border:1px solid rgba(124,111,255,0.2);border-radius:var(--r);font-size:14px;color:var(--text2);line-height:1.7;}
+.q-exp.show{display:block;}
+.q-exp-head{font-weight:600;color:var(--text);margin-bottom:4px;}
+.quiz-nav{display:flex;align-items:center;gap:10px;margin-top:16px;}
+.btn-p{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:var(--r);font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-p:hover{background:var(--accent2);}
+.btn-o{background:transparent;color:var(--text);border:1px solid var(--border2);padding:9px 22px;border-radius:var(--r);font-family:var(--font-body);font-size:14px;cursor:pointer;transition:all .2s;}
+.btn-o:hover{border-color:var(--accent);color:var(--accent2);}
+.q-score{font-family:var(--font-mono);font-size:13px;color:var(--text3);margin-left:auto;}
+.result-box{text-align:center;padding:32px 20px;}
+.res-num{font-family:var(--font-head);font-size:3.5rem;font-weight:800;color:var(--accent2);}
+.res-msg{font-size:1rem;color:var(--text2);margin-bottom:20px;}
+.res-pills{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;}
+
+/* KEY CONCEPTS GRID */
+.concepts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin:16px 0;}
+.concept-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
+.cc-term{font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--accent2);margin-bottom:6px;}
+.cc-def{font-size:13px;color:var(--text2);line-height:1.6;}
+
+/* COMPARISON TABLE */
+.comp-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;}
+.comp-table th{text-align:left;padding:10px 14px;font-family:var(--font-mono);font-size:11px;color:var(--text3);border-bottom:1px solid var(--border2);font-weight:500;}
+.comp-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top;}
+.comp-table tr:last-child td{border-bottom:none;}
+.comp-table td:first-child{color:var(--text);font-weight:500;}
+.comp-table tr:hover td{background:var(--bg3);}
+
+/* SECTION DIVIDER */
+.sdiv{height:1px;background:var(--border);margin:60px 0;}
+
+/* SCROLL ANIMATION */
+.fade-in{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease;}
+.fade-in.visible{opacity:1;transform:none;}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr;}
+  aside{display:none;}
+  main{padding:28px 20px 80px;}
+  .model-grid{grid-template-columns:1fr;}
+}
+@media(max-width:640px){
+  .rag-steps{flex-direction:column;}
+  .rag-arr{transform:rotate(90deg);margin:4px auto -4px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="index.html">← Back</a>
+  <span class="nav-title">Chapter 1 — GenAI Foundations</span>
+  <div class="nav-progress">
+    <div class="np-bar"><div class="np-fill" id="scrollProg"></div></div>
+    <span class="np-pct" id="scrollPct">0%</span>
+  </div>
+</nav>
+
+<div class="layout">
+<aside>
+  <div class="aside-label">Contents</div>
+  <a class="aside-link" href="#llm" data-section="llm">1. How LLMs work</a>
+  <a class="aside-link" href="#temperature" data-section="temperature">2. Temperature & sampling</a>
+  <a class="aside-link" href="#tokenization" data-section="tokenization">3. Tokenization</a>
+  <a class="aside-link" href="#embeddings" data-section="embeddings">4. Embeddings</a>
+  <a class="aside-link" href="#rag" data-section="rag">5. RAG pipeline</a>
+  <a class="aside-link" href="#agents" data-section="agents">6. Agentic tool-use</a>
+  <a class="aside-link" href="#diffusion" data-section="diffusion">7. Diffusion models</a>
+  <a class="aside-link" href="#models" data-section="models">8. Model types</a>
+  <a class="aside-link" href="#quiz" data-section="quiz">Quiz</a>
+  <div style="margin-top:24px;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);font-size:12px;color:var(--text3);line-height:1.6;">
+    <span style="color:var(--accent2);font-weight:600;">~18%</span> of exam<br>
+    K1 · K2 · K3 questions
+  </div>
+</aside>
+
+<main>
+<!-- HERO -->
+<div class="chapter-hero fade-in">
+  <div class="ch-eyebrow">Chapter 1 of 7</div>
+  <h1>GenAI <span>Foundations</span><br>for Testers</h1>
+  <p class="ch-intro">You cannot test what you don't understand. This chapter gives you the mental models — LLMs, temperature, embeddings, RAG, agents — that everything else in the syllabus builds on.</p>
+  <div class="ch-meta">
+    <span class="ch-badge">Exam weight: <span>~18%</span></span>
+    <span class="ch-badge">Topics: <span>8</span></span>
+    <span class="ch-badge">Quiz questions: <span>10</span></span>
+  </div>
+</div>
+
+<!-- 1. HOW LLMs WORK -->
+<div class="topic fade-in" id="llm">
+  <div class="topic-header">
+    <div class="topic-num">01</div>
+    <div class="topic-title-wrap">
+      <h2>How LLMs work</h2>
+      <div class="topic-sub">Large Language Models — the engine behind all GenAI systems</div>
+    </div>
+  </div>
+  <p class="prose">An LLM is a neural network trained on massive text corpora to predict the next token in a sequence. It doesn't "know" facts — it learns statistical patterns. At inference time, it generates one token at a time, each time sampling from a probability distribution over its entire vocabulary (~50,000+ tokens).</p>
+  <p class="prose">The key testing implication: <strong>the same input can produce different outputs on different runs</strong>, because the generation process involves probabilistic sampling. This is the foundational challenge that makes GenAI testing different from classical software testing.</p>
+
+  <div class="interactive-card fade-in">
+    <div class="ic-title">LLM generation — token-by-token</div>
+    <div class="ic-sub">Watch how a response builds one token at a time</div>
+    <div style="margin-bottom:14px;">
+      <button class="btn-p" id="genBtn" onclick="startGen()" style="font-size:13px;padding:8px 18px;">Generate response ▶</button>
+      <button class="btn-o" onclick="resetGen()" style="font-size:13px;padding:7px 18px;margin-left:8px;">Reset</button>
+    </div>
+    <div style="font-size:13px;color:var(--text3);font-family:var(--font-mono);margin-bottom:8px;">Prompt: "The test result was"</div>
+    <div id="genOutput" style="min-height:48px;background:var(--bg3);border-radius:var(--r);padding:12px 16px;font-family:var(--font-mono);font-size:14px;color:var(--text);line-height:1.8;"></div>
+    <div id="genStats" style="margin-top:8px;font-size:12px;color:var(--text3);font-family:var(--font-mono);"></div>
+  </div>
+
+  <div class="concepts-grid fade-in">
+    <div class="concept-card"><div class="cc-term">Context window</div><div class="cc-def">The maximum number of tokens the model can process at once — both input and output. Typically 4K–200K tokens. Exceeding it truncates early content.</div></div>
+    <div class="concept-card"><div class="cc-term">Next-token prediction</div><div class="cc-def">The core LLM operation: given all previous tokens, predict the probability distribution of the next one. Responses are built by repeating this step.</div></div>
+    <div class="concept-card"><div class="cc-term">Vocabulary</div><div class="cc-def">The set of all possible tokens (~50K). Each token gets a probability score at each generation step. The model picks one via sampling.</div></div>
+    <div class="concept-card"><div class="cc-term">Pre-training vs inference</div><div class="cc-def">Pre-training learns patterns from data (done once, expensive). Inference generates responses (done per query, faster). Testers interact only at inference.</div></div>
+  </div>
+
+  <div class="callout tip"><strong>Exam note (K2):</strong> LLMs are stochastic by design. Classical test assertions (expected output == actual output) fail for high-temperature settings. Always specify how determinism is achieved before asserting output equality.</div>
+</div>
+
+<!-- 2. TEMPERATURE -->
+<div class="topic fade-in" id="temperature">
+  <div class="topic-header">
+    <div class="topic-num">02</div>
+    <div class="topic-title-wrap">
+      <h2>Temperature & sampling</h2>
+      <div class="topic-sub">The single most important parameter for testability</div>
+    </div>
+  </div>
+  <p class="prose">Temperature scales the probability distribution before sampling. At <strong>temperature=0</strong>, the model always picks the highest-probability token — fully deterministic. As temperature increases, the distribution flattens and lower-probability tokens get more chances, producing more varied and creative (but less predictable) outputs.</p>
+
+  <div class="interactive-card fade-in">
+    <div class="ic-title">Temperature explorer</div>
+    <div class="ic-sub">Drag to see how sampling distribution changes</div>
+    <div class="ctrl-row">
+      <label>Temperature</label>
+      <input type="range" min="0" max="20" value="7" step="1" id="tempSl" oninput="updateTempChart()">
+      <span class="ctrl-val" id="tempV">0.7</span>
+    </div>
+    <canvas id="tempChart" style="max-height:200px;margin-bottom:10px;"></canvas>
+    <div class="output-note" id="tempNote"></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;" id="tempScenarios">
+      <div onclick="setTemp(0)" style="cursor:pointer;background:var(--bg3);border-radius:var(--r);padding:10px;text-align:center;border:1px solid var(--border2);">
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--teal);">T = 0</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px;">Regression testing</div>
+      </div>
+      <div onclick="setTemp(5)" style="cursor:pointer;background:var(--bg3);border-radius:var(--r);padding:10px;text-align:center;border:1px solid var(--border2);">
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--accent2);">T = 0.5</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px;">Factual Q&A</div>
+      </div>
+      <div onclick="setTemp(10)" style="cursor:pointer;background:var(--bg3);border-radius:var(--r);padding:10px;text-align:center;border:1px solid var(--border2);">
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--amber);">T = 1.0</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px;">Deployed chatbot</div>
+      </div>
+      <div onclick="setTemp(16)" style="cursor:pointer;background:var(--bg3);border-radius:var(--r);padding:10px;text-align:center;border:1px solid var(--border2);">
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--red);">T = 1.6</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px;">Creative writing</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warn"><strong>Exam trap:</strong> Temperature=0 makes the model deterministic but not infallible. A deterministic wrong answer is still wrong. Temperature controls variance, not accuracy.</div>
+
+  <div class="interactive-card fade-in">
+    <div class="ic-title">Sampling strategies — top-k vs top-p</div>
+    <div class="ic-sub">Two ways to constrain the sampling pool</div>
+    <div class="ctrl-row">
+      <label>Mode</label>
+      <select id="sampMode" onchange="updateSampling()" style="background:var(--bg3);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:6px 10px;font-family:var(--font-body);font-size:13px;">
+        <option value="topk">Top-k sampling</option>
+        <option value="topp">Top-p (nucleus) sampling</option>
+      </select>
+    </div>
+    <div class="ctrl-row" id="sampCtrl">
+      <label id="sampLabel">k value</label>
+      <input type="range" min="1" max="10" value="3" id="sampSl" oninput="updateSampling()">
+      <span class="ctrl-val" id="sampV">3</span>
+    </div>
+    <canvas id="sampChart" style="max-height:180px;margin-bottom:10px;"></canvas>
+    <div class="output-note" id="sampNote"></div>
+  </div>
+</div>
+
+<!-- 3. TOKENIZATION -->
+<div class="topic fade-in" id="tokenization">
+  <div class="topic-header">
+    <div class="topic-num">03</div>
+    <div class="topic-title-wrap">
+      <h2>Tokenization</h2>
+      <div class="topic-sub">How text becomes numbers</div>
+    </div>
+  </div>
+  <p class="prose">Text is split into tokens — sub-word units — before an LLM processes it. Tokenization is not word-by-word: common words are usually one token, rare words split into multiple. Numbers, special characters, code, and non-English text often tokenize unpredictably.</p>
+  <p class="prose"><strong>Why testers care:</strong> context window limits are measured in tokens, not words. A 4,096-token context window holds roughly 3,000 English words — but only ~1,500 words if the text contains lots of code or technical terms.</p>
+
+  <div class="interactive-card fade-in">
+    <div class="ic-title">Tokenizer playground</div>
+    <div class="ic-sub">Click any token to inspect it — hover to see its ID</div>
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <button class="btn-o" onclick="tokenize('The test result was positive for all edge cases')" style="font-size:12px;padding:5px 12px;">English sentence</button>
+        <button class="btn-o" onclick="tokenize('def calculate_similarity(vec1, vec2):')" style="font-size:12px;padding:5px 12px;">Code</button>
+        <button class="btn-o" onclick="tokenize('temperature=0.7 top_p=0.95 max_tokens=1024')" style="font-size:12px;padding:5px 12px;">Config params</button>
+        <button class="btn-o" onclick="tokenize('नमस्ते यह एक परीक्षण है')" style="font-size:12px;padding:5px 12px;">Hindi text</button>
+      </div>
+      <input id="tokInput" placeholder="Type anything to tokenize…" style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:var(--font-mono);font-size:13px;outline:none;" oninput="tokenize(this.value)">
+    </div>
+    <div class="token-row" id="tokenRow"></div>
+    <div class="token-info" id="tokenInfo">Click a token to inspect its properties.</div>
+    <div id="tokenStats" style="margin-top:8px;font-size:12px;font-family:var(--font-mono);color:var(--text3);"></div>
+  </div>
+</div>
+
+<!-- 4. EMBEDDINGS -->
+<div class="topic fade-in" id="embeddings">
+  <div class="topic-header">
+    <div class="topic-num">04</div>
+    <div class="topic-title-wrap">
+      <h2>Embeddings & vector search</h2>
+      <div class="topic-sub">Semantic similarity in high-dimensional space</div>
+    </div>
+  </div>
+  <p class="prose">An embedding converts text into a dense vector of numbers (e.g. 1,536 dimensions for OpenAI's ada-002). Semantically similar text maps to geometrically nearby points. This powers semantic search — finding relevant documents even when they use different words than the query.</p>
+  <p class="prose"><strong>Why testers care:</strong> The quality of the embedding model directly determines retrieval quality in RAG systems. A poor embedding model maps semantically equivalent queries to distant vectors — causing retrieval failure even with a perfect knowledge base.</p>
+
+  <div class="interactive-card fade-in">
+    <div class="ic-title">Embedding space visualiser</div>
+    <div class="ic-sub">Click a query to find its nearest neighbours — semantic similarity in action</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;" id="queryBtns"></div>
+    <canvas id="embCanvas" height="300"></canvas>
+    <div class="emb-legend" id="embLegend"></div>
+    <div id="embResult" style="margin-top:10px;font-size:13px;color:var(--text2);background:var(--bg3);border-radius:var(--r);padding:10px 14px;line-height:1.7;min-height:44px;"></div>
+  </div>
+
+  <div class="interactive-card fade-in">
+    <div class="ic-title">Cosine similarity calculator</div>
+    <div class="ic-sub">How the retriever ranks candidates — higher = more similar</div>
+    <canvas id="cosChart" style="max-height:180px;"></canvas>
+    <div class="output-note" style="margin-top:10px;">Cosine similarity ignores vector magnitude and measures only the <strong>angle</strong> between vectors. Two texts can use different words but land at similar angles if they convey the same meaning.</div>
+  </div>
+</div>
+
+<!-- 5. RAG PIPELINE -->
+<div class="topic fade-in" id="rag">
+  <div class="topic-header">
+    <div class="topic-num">05</div>
+    <div class="topic-title-wrap">
+      <h2>RAG pipeline</h2>
+      <div class="topic-sub">The most-tested architecture in CT-GenAI</div>
+    </div>
+  </div>
+  <p class="prose">Retrieval-Augmented Generation (RAG) grounds LLM responses in external documents. Instead of relying purely on training data, the system retrieves relevant chunks at query time and injects them into the prompt as context. The LLM then answers based on that context — reducing hallucination risk.</p>
+  <p class="prose"><strong>The exam will describe RAG scenarios and ask you to identify which stage failed.</strong> The key is to distinguish retrieval failures from generation failures — they require completely different fixes.</p>
+
+  <div class="interactive-card fade-in">
+    <div class="ic-title">RAG pipeline — click each stage</div>
+    <div class="ic-sub">Understand failure modes at every step</div>
+    <div class="rag-steps" id="ragSteps"></div>
+    <div id="ragDetailBox" class="rag-detail-box" style="display:none;"></div>
+  </div>
+
+  <div class="interactive-card fade-in">
+    <div class="ic-title">RAG evaluation — the three-axis model</div>
+    <div class="ic-sub">Every RAG response must be evaluated on all three axes independently</div>
+    <canvas id="radarChart" style="max-height:280px;"></canvas>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;">
+      <div style="background:var(--bg3);border-radius:var(--r);padding:12px;">
+        <div style="font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:4px;">Context relevance</div>
+        <div style="font-size:12px;color:var(--text2);">Did retriever fetch the right chunks? → Precision@k, Recall@k</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:var(--r);padding:12px;">
+        <div style="font-size:12px;font-weight:600;color:var(--teal);margin-bottom:4px;">Faithfulness</div>
+        <div style="font-size:12px;color:var(--text2);">Is the answer grounded in context? → Faithfulness score, NLI</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:var(--r);padding:12px;">
+        <div style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:4px;">Answer relevance</div>
+        <div style="font-size:12px;color:var(--text2);">Does it address the question? → ROUGE-L, BERTScore, human eval</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout danger"><strong>Exam trap:</strong> Low faithfulness ≠ bad retrieval. If the faithfulness score is low, the LLM ignored the retrieved context. If context relevance is low, the retriever fetched wrong chunks. They are separate failure modes requiring separate fixes.</div>
+</div>
+
+<!-- 6. AGENTS -->
+<div class="topic fade-in" id="agents">
+  <div class="topic-header">
+    <div class="topic-num">06</div>
+    <div class="topic-title-wrap">
+      <h2>Agentic tool-use</h2>
+      <div class="topic-sub">LLMs that plan, act, and loop — a new class of test target</div>
+    </div>
+  </div>
+  <p class="prose">A GenAI agent can call external tools (APIs, databases, code runners, browsers) and chain multiple tool calls to complete a goal autonomously. This introduces testing challenges that don't exist in simple prompt-response systems: <strong>side effects, error propagation, and non-deterministic multi-step paths.</strong></p>
+
+  <div class="interactive-card fade-in">
+    <div class="ic-title">The agentic loop — step by step</div>
+    <div class="ic-sub">Click each step to see the testing risk</div>
+    <div class="agent-steps-nav" id="agentNav"></div>
+    <div id="agentPanel"></div>
+  </div>
+
+  <table class="comp-table fade-in">
+    <thead><tr><th>Aspect</th><th>Classic API testing</th><th>Agentic LLM testing</th></tr></thead>
+    <tbody>
+      <tr><td>Output determinism</td><td>Same input → same output</td><td>Same prompt → different tool call sequence</td></tr>
+      <tr><td>Side effects</td><td>Known, bounded</td><td>Any tool call can have real-world effects</td></tr>
+      <tr><td>Error propagation</td><td>Fail fast at step N</td><td>Wrong tool call in step 2 cascades to wrong final answer</td></tr>
+      <tr><td>Test environment</td><td>Mock DB/API</td><td>Must mock ALL tools + simulate realistic tool responses</td></tr>
+      <tr><td>Assertions</td><td>Exact output match</td><td>Goal completion, side-effect audit, path coverage</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 7. DIFFUSION -->
+<div class="topic fade-in" id="diffusion">
+  <div class="topic-header">
+    <div class="topic-num">07</div>
+    <div class="topic-title-wrap">
+      <h2>Diffusion models</h2>
+      <div class="topic-sub">Image generation — a brief but examinable topic</div>
+    </div>
+  </div>
+  <p class="prose">Diffusion models (DALL-E, Stable Diffusion, Midjourney) generate images by learning to reverse a noise-adding process. They start with pure noise and iteratively denoise it, guided by a text prompt, until an image emerges. Random noise is sampled at each run — so the same prompt produces different images every time.</p>
+
+  <div class="interactive-card fade-in">
+    <div class="ic-title">Diffusion process — denoising steps</div>
+    <div class="ic-sub">Drag to see how the image "emerges" from noise over denoising steps</div>
+    <div class="ctrl-row">
+      <label>Denoising steps</label>
+      <input type="range" min="1" max="50" value="1" id="diffSl" oninput="updateDiffusion()">
+      <span class="ctrl-val" id="diffV">1</span>
+    </div>
+    <canvas id="diffCanvas" height="160" style="width:100%;border-radius:var(--r);margin-bottom:10px;"></canvas>
+    <div class="output-note" id="diffNote"></div>
+  </div>
+
+  <div class="concepts-grid fade-in">
+    <div class="concept-card"><div class="cc-term">Non-determinism</div><div class="cc-def">Each run samples fresh noise → different image. Same prompt ≠ same output. Classical pixel-exact assertions don't work.</div></div>
+    <div class="concept-card"><div class="cc-term">Quality attributes</div><div class="cc-def">Prompt adherence, aesthetic quality, bias (representation), toxicity (NSFW content), style consistency.</div></div>
+    <div class="concept-card"><div class="cc-term">Testing approach</div><div class="cc-def">Semantic similarity metrics, human evaluation rubrics, automated classifiers for bias/toxicity, CLIP score for prompt adherence.</div></div>
+    <div class="concept-card"><div class="cc-term">Seed control</div><div class="cc-def">Most diffusion APIs accept a seed parameter — fixing seed makes generation deterministic. Critical for regression testing image features.</div></div>
+  </div>
+</div>
+
+<!-- 8. MODEL TYPES -->
+<div class="topic fade-in" id="models">
+  <div class="topic-header">
+    <div class="topic-num">08</div>
+    <div class="topic-title-wrap">
+      <h2>Model types</h2>
+      <div class="topic-sub">Foundation, fine-tuned, instruction-tuned — know the distinctions</div>
+    </div>
+  </div>
+  <p class="prose">The exam expects you to distinguish between three model types and understand the testing implications of each. Most deployed LLMs you'll encounter are instruction-tuned — but the testing strategy changes depending on what has been done to the base model.</p>
+
+  <div class="model-grid fade-in">
+    <div class="model-card">
+      <div style="font-size:2rem;margin-bottom:10px;">⬡</div>
+      <div class="mc-title">Foundation model</div>
+      <div class="mc-def">Trained on massive unlabelled text corpora to predict next tokens. General purpose. Enormous parameter count. Raw capability, no task-specific alignment.</div>
+      <div class="mc-example">GPT-4 base, Llama 3, Gemini Ultra, Claude 3</div>
+      <div class="mc-exam">Testing scope: capability benchmarks, knowledge cutoff verification, context window limits.</div>
+    </div>
+    <div class="model-card">
+      <div style="font-size:2rem;margin-bottom:10px;">⬡⬡</div>
+      <div class="mc-title">Fine-tuned model</div>
+      <div class="mc-def">A foundation model further trained on domain-specific data to specialise its knowledge or behaviour. Risks catastrophic forgetting of base capabilities.</div>
+      <div class="mc-example">HR policy assistant, legal document analyser, medical diagnosis aid</div>
+      <div class="mc-exam">Testing scope: new domain behaviour AND base capability regression. Both must pass.</div>
+    </div>
+    <div class="model-card">
+      <div style="font-size:2rem;margin-bottom:10px;">⬡⬡⬡</div>
+      <div class="mc-title">Instruction-tuned</div>
+      <div class="mc-def">Fine-tuned specifically to follow human instructions using RLHF or similar. Adds safety alignment, helpfulness optimisation. Most deployed consumer LLMs are this type.</div>
+      <div class="mc-example">ChatGPT, Claude (Anthropic), Gemini (Google)</div>
+      <div class="mc-exam">Testing scope: instruction following, safety guardrails, refusal behaviour, jailbreak resistance.</div>
+    </div>
+  </div>
+
+  <div class="interactive-card fade-in">
+    <div class="ic-title">Fine-tuning risk: catastrophic forgetting</div>
+    <div class="ic-sub">Performance on base capabilities vs domain-specific tasks after fine-tuning</div>
+    <canvas id="finetuneChart" style="max-height:200px;"></canvas>
+    <div class="output-note">Fine-tuning on domain data can degrade general capabilities. Regression testing after fine-tuning must cover <strong>both</strong> the new domain behaviour <strong>and</strong> pre-existing base capabilities.</div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="sdiv"></div>
+<div class="topic fade-in" id="quiz">
+  <div class="topic-header">
+    <div class="topic-num">—</div>
+    <div class="topic-title-wrap">
+      <h2>Chapter 1 quiz</h2>
+      <div class="topic-sub">10 scenario-based questions · K2 and K3 level</div>
+    </div>
+  </div>
+  <div class="quiz-wrap">
+    <div class="q-prog-bg"><div class="q-prog-fill" id="qProg"></div></div>
+    <div id="quizBody"></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ── SCROLL PROGRESS ──────────────────────────────────────────────────────────
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  const pct=h>0?Math.round(window.scrollY/h*100):0;
+  document.getElementById('scrollProg').style.width=pct+'%';
+  document.getElementById('scrollPct').textContent=pct+'%';
+  // sidebar active
+  document.querySelectorAll('.topic[id]').forEach(s=>{
+    const rect=s.getBoundingClientRect();
+    if(rect.top<=120&&rect.bottom>120){
+      document.querySelectorAll('.aside-link').forEach(l=>l.classList.toggle('active',l.dataset.section===s.id));
+    }
+  });
+});
+
+// ── FADE IN ON SCROLL ─────────────────────────────────────────────────────────
+const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.08});
+document.querySelectorAll('.fade-in').forEach(el=>io.observe(el));
+
+// ── TOKEN GENERATION DEMO ─────────────────────────────────────────────────────
+const genTokens=["The","test","result","was","positive","for","all","edge","cases","—","confidence"," ","97","%"];
+let genInterval=null,genIdx=0;
+function startGen(){
+  if(genInterval)return;
+  document.getElementById('genBtn').disabled=true;
+  genInterval=setInterval(()=>{
+    if(genIdx>=genTokens.length){clearInterval(genInterval);genInterval=null;document.getElementById('genBtn').disabled=false;return;}
+    document.getElementById('genOutput').textContent+=genTokens[genIdx];
+    genIdx++;
+    document.getElementById('genStats').textContent=`Tokens generated: ${genIdx} | Approx cost: $${(genIdx*0.000002).toFixed(7)}`;
+  },200);
+}
+function resetGen(){clearInterval(genInterval);genInterval=null;genIdx=0;document.getElementById('genOutput').textContent='';document.getElementById('genStats').textContent='';document.getElementById('genBtn').disabled=false;}
+
+// ── TEMPERATURE CHART ──────────────────────────────────────────────────────────
+const tempCandidates=[{w:'positive',b:3.2},{w:'negative',b:2.8},{w:'inconclusive',b:1.5},{w:'unexpected',b:0.9},{w:'correct',b:0.4}];
+let tChart;
+function softmax(l,t){const s=l.map(x=>x/Math.max(t,0.01)),m=Math.max(...s),e=s.map(x=>Math.exp(x-m)),sum=e.reduce((a,b)=>a+b,0);return e.map(x=>x/sum);}
+function updateTempChart(){
+  const raw=parseInt(document.getElementById('tempSl').value),t=raw/10;
+  document.getElementById('tempV').textContent=t.toFixed(1);
+  const probs=softmax(tempCandidates.map(c=>c.b),t);
+  tChart.data.datasets[0].data=probs.map(p=>+(p*100).toFixed(1));
+  tChart.update();
+  const notes={0:'T=0 → always picks "positive". Deterministic. Use for regression suites.',1:'Very low → near-deterministic. Good for structured output testing.',5:'Low → top token dominant but some variance. Run multiple times.',7:'Medium (default) → balanced creativity vs consistency. Need statistical aggregation.',10:'High → distribution flattens. Significant variance. Use distribution-level evaluation.',15:'Very high → outputs unpredictable. Classical assertions will fail intermittently.',20:'Maximum → essentially random sampling across all candidates.'};
+  const closest=[0,1,5,7,10,15,20].reduce((a,b)=>Math.abs(b-raw)<Math.abs(a-raw)?b:a);
+  document.getElementById('tempNote').textContent=notes[closest];
+}
+function setTemp(v){document.getElementById('tempSl').value=v;updateTempChart();}
+
+// ── SAMPLING CHART ─────────────────────────────────────────────────────────────
+let sChart;
+const sampProbs=[42,28,14,8,4,2,1,0.5,0.3,0.2];
+function updateSampling(){
+  const mode=document.getElementById('sampMode').value;
+  const sl=document.getElementById('sampSl');
+  const lbl=document.getElementById('sampLabel');
+  const vEl=document.getElementById('sampV');
+  if(mode==='topk'){sl.min=1;sl.max=10;lbl.textContent='k value';if(parseInt(sl.value)>10)sl.value=3;}
+  else{sl.min=1;sl.max=10;lbl.textContent='p × 10';} // simplified
+  const v=parseInt(sl.value);
+  vEl.textContent=mode==='topk'?v:(v/10).toFixed(1);
+  const colors=sampProbs.map((_,i)=>{
+    if(mode==='topk')return i<v?'rgba(124,111,255,0.7)':'rgba(94,91,114,0.3)';
+    let cum=0;for(let j=0;j<=i;j++)cum+=sampProbs[j];
+    return cum<=v*10?'rgba(45,212,191,0.7)':'rgba(94,91,114,0.3)';
+  });
+  sChart.data.datasets[0].backgroundColor=colors;
+  sChart.data.datasets[0].borderColor=colors.map(c=>c.replace('0.7','1').replace('0.3','0.5'));
+  sChart.update();
+  const note=mode==='topk'
+    ?`Top-k: only the ${v} highest-probability tokens are eligible for selection. Tokens ranked ${v+1}+ are excluded.`
+    :`Top-p (nucleus): tokens are included until their cumulative probability reaches p=${(v/10).toFixed(1)}. Adapts pool size based on distribution shape.`;
+  document.getElementById('sampNote').textContent=note;
+}
+
+// ── TOKENIZER ─────────────────────────────────────────────────────────────────
+const tokenColors=['#7c6fff','#2dd4bf','#f59e0b','#f87171','#4ade80','#f472b6','#60a5fa','#a78bfa'];
+function tokenize(text){
+  document.getElementById('tokInput').value=text;
+  if(!text.trim()){document.getElementById('tokenRow').innerHTML='';document.getElementById('tokenStats').textContent='';return;}
+  // Simplified tokenizer simulation
+  const toks=[];
+  const words=text.match(/\S+|\s+/g)||[];
+  words.forEach((w,wi)=>{
+    if(/^\s+$/.test(w))return;
+    if(w.length<=4)toks.push({text:w,id:Math.floor(Math.random()*50000)});
+    else if(w.length<=8){toks.push({text:w.slice(0,Math.ceil(w.length/2)),id:Math.floor(Math.random()*50000)});toks.push({text:w.slice(Math.ceil(w.length/2)),id:Math.floor(Math.random()*50000)});}
+    else{for(let i=0;i<w.length;i+=3)toks.push({text:w.slice(i,i+3)||w.slice(i),id:Math.floor(Math.random()*50000)});}
+  });
+  const el=document.getElementById('tokenRow');
+  el.innerHTML=toks.map((t,i)=>`<div class="tok" style="border-color:${tokenColors[i%tokenColors.length]}40;color:${tokenColors[i%tokenColors.length]}" onclick="showTok(${i},'${t.text.replace(/'/g,"\\'")}',${t.id})">${t.text}<span class="tok-id">${t.id}</span></div>`).join('');
+  document.getElementById('tokenStats').textContent=`${toks.length} tokens · ~${Math.round(toks.length*0.75)} words · ~${toks.length} context window units`;
+  document.getElementById('tokenInfo').textContent='Click a token to inspect it.';
+}
+function showTok(i,text,id){
+  document.querySelectorAll('.tok').forEach((t,j)=>t.classList.toggle('selected',j===i));
+  document.getElementById('tokenInfo').innerHTML=`<strong>Token:</strong> "${text}" &nbsp;|&nbsp; <strong>ID:</strong> ${id} &nbsp;|&nbsp; <strong>Position:</strong> ${i} &nbsp;|&nbsp; <strong>Chars:</strong> ${text.length}<br><span style="color:var(--text3);font-size:12px">In the model's forward pass, this token ID maps to an embedding vector of ~1,536 dimensions.</span>`;
+}
+
+// ── EMBEDDING VIZ ──────────────────────────────────────────────────────────────
+const EMB_POINTS=[
+  {l:'Regression testing',x:.18,y:.22,cat:0},{l:'Test case design',x:.22,y:.32,cat:0},{l:'Boundary testing',x:.14,y:.28,cat:0},{l:'Defect logging',x:.26,y:.18,cat:0},{l:'Test automation',x:.20,y:.38,cat:0},
+  {l:'LLM evaluation',x:.48,y:.36,cat:1},{l:'Hallucination risk',x:.52,y:.28,cat:1},{l:'RAG pipeline',x:.56,y:.42,cat:1},{l:'Prompt engineering',x:.50,y:.48,cat:1},{l:'Embeddings',x:.60,y:.36,cat:1},{l:'Neural networks',x:.62,y:.26,cat:1},
+  {l:'Cricket scores',x:.80,y:.62,cat:2},{l:'Trekking routes',x:.72,y:.78,cat:2},{l:'Dog boarding',x:.84,y:.70,cat:2},{l:'Stock prices',x:.76,y:.54,cat:2},
+];
+const EMB_QUERIES=[
+  {l:'How does RAG work?',x:.52,y:.44},{l:'Test case design',x:.21,y:.31},{l:'Embedding similarity',x:.58,y:.38},{l:'Cricket scores today',x:.79,y:.63}
+];
+const CAT_COLORS=['#7c6fff','#2dd4bf','#f59e0b'];
+const CAT_NAMES=['Testing concepts','AI/ML concepts','Unrelated'];
+let activeQuery=0;
+function buildEmbUI(){
+  document.getElementById('queryBtns').innerHTML=EMB_QUERIES.map((q,i)=>`<button class="btn-o" onclick="setEmbQuery(${i})" id="qb${i}" style="font-size:12px;padding:5px 12px;">${q.l}</button>`).join('');
+  document.getElementById('embLegend').innerHTML=CAT_NAMES.map((n,i)=>`<div class="leg-item"><div class="leg-dot" style="background:${CAT_COLORS[i]}"></div>${n}</div>`).join('')+`<div class="leg-item"><div class="leg-dot" style="background:#f59e0b;border:2px solid #b45309;"></div>Active query</div>`;
+  drawEmb();
+}
+function setEmbQuery(i){activeQuery=i;document.querySelectorAll('#queryBtns button').forEach((b,j)=>{b.style.borderColor=j===i?'var(--accent)':'';b.style.color=j===i?'var(--accent2)':'';});drawEmb();}
+function dist(a,b){return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);}
+function drawEmb(){
+  const canvas=document.getElementById('embCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.offsetWidth||600,H=300;
+  canvas.width=W*window.devicePixelRatio;canvas.height=H*window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
+  const PAD=20,toX=x=>PAD+x*(W-2*PAD),toY=y=>PAD+y*(H-2*PAD);
+  ctx.clearRect(0,0,W,H);
+  const q=EMB_QUERIES[activeQuery];
+  const sorted=[...EMB_POINTS].sort((a,b)=>dist(a,q)-dist(b,q));
+  const top3=sorted.slice(0,3);
+  top3.forEach(p=>{ctx.beginPath();ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(245,158,11,0.5)';ctx.lineWidth=1.5;ctx.moveTo(toX(q.x),toY(q.y));ctx.lineTo(toX(p.x),toY(p.y));ctx.stroke();ctx.setLineDash([]);});
+  EMB_POINTS.forEach(p=>{
+    const isTop=top3.includes(p);
+    ctx.beginPath();ctx.arc(toX(p.x),toY(p.y),isTop?7:5,0,Math.PI*2);ctx.fillStyle=CAT_COLORS[p.cat]+(isTop?'':'88');ctx.fill();
+    ctx.font=`${isTop?'500 ':''}12px 'IBM Plex Mono',monospace`;ctx.fillStyle=isTop?'#e8e6f0':'#9b98b0';ctx.fillText(p.l,toX(p.x)+10,toY(p.y)+4);
+  });
+  ctx.beginPath();ctx.arc(toX(q.x),toY(q.y),8,0,Math.PI*2);ctx.fillStyle='#f59e0b';ctx.fill();ctx.strokeStyle='#b45309';ctx.lineWidth=2;ctx.stroke();
+  ctx.font="500 12px 'IBM Plex Mono',monospace";ctx.fillStyle='#fbbf24';ctx.fillText('query',toX(q.x)+12,toY(q.y)-6);
+  document.getElementById('embResult').innerHTML=`<strong style="color:var(--text)">Top 3 retrieved:</strong> ${top3.map((p,i)=>`<span style="color:${CAT_COLORS[p.cat]}">${p.l}</span>`).join(' · ')}<br><span style="color:var(--text3);font-size:12px">Retrieval works by cosine similarity between query embedding and all document embeddings in the vector store.</span>`;
+}
+window.addEventListener('resize',()=>{if(document.getElementById('embCanvas'))drawEmb();});
+
+// ── COSINE CHART ───────────────────────────────────────────────────────────────
+function buildCosChart(){
+  const ctx=document.getElementById('cosChart').getContext('2d');
+  new Chart(ctx,{type:'bar',data:{
+    labels:['Cancel subscription','End account','Unsubscribe','Refund policy','Hiking trails'],
+    datasets:[{label:'Cosine similarity to "How to cancel my account"',data:[0.94,0.91,0.83,0.41,0.08],backgroundColor:['rgba(124,111,255,0.8)','rgba(124,111,255,0.7)','rgba(124,111,255,0.6)','rgba(245,158,11,0.5)','rgba(94,91,114,0.3)'],borderRadius:6}]
+  },options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' Similarity: '+c.parsed.x.toFixed(2)}}},scales:{x:{min:0,max:1,ticks:{color:'#5e5b72',font:{size:11}},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'transparent'}},y:{ticks:{color:'#9b98b0',font:{size:12}},grid:{display:false},border:{color:'transparent'}}}}});
+}
+
+// ── RAG STAGES ─────────────────────────────────────────────────────────────────
+const RAG_STAGES=[
+  {id:'query',title:'User query',sub:'Natural language in',failures:['Vague or underspecified','Contains prompt injection','Out-of-scope request','PII in query text'],tests:['Intent coverage test set','Injection probe suite','OOS query set','PII detection checks']},
+  {id:'embed',title:'Embed query',sub:'Text → vector',failures:['Semantic mismatch','Language/domain gap','Embedding model outdated'],tests:['Paraphrase consistency test','Cross-lingual eval','Embedding drift monitoring']},
+  {id:'search',title:'Vector search',sub:'k-NN retrieval',failures:['Wrong chunks retrieved','Relevant chunk not in top-k','k value too low'],tests:['Precision@k measurement','Recall@k measurement','MRR evaluation']},
+  {id:'rerank',title:'Reranker',sub:'Score & filter',failures:['Correct chunk dropped','Reranker bias toward length','Slow reranking adds latency'],tests:['Before/after NDCG comparison','Length-controlled eval','Latency profiling']},
+  {id:'prompt',title:'Build prompt',sub:'System + context + Q',failures:['Context exceeds window limit','System prompt conflicts with context','Context order affects answer'],tests:['Max-length context tests','Prompt format regression','Position bias tests']},
+  {id:'llm',title:'LLM generate',sub:'Response from context',failures:['Hallucination (ignores context)','Over-refusal','Irrelevant answer'],tests:['Faithfulness score','Refusal rate on valid queries','Answer relevance score']},
+  {id:'output',title:'Response',sub:'To user',failures:['Wrong format','Incomplete answer','PII leaked in output'],tests:['Format validation','Completeness rubric','PII output scan']}
+];
+let activeRag=null;
+function buildRag(){
+  const stepsEl=document.getElementById('ragSteps');
+  RAG_STAGES.forEach((s,i)=>{
+    const step=document.createElement('div');step.className='rag-step';
+    const node=document.createElement('div');node.className='rag-node';node.id='rn'+i;
+    node.innerHTML=`<div class="rn-num">0${i+1}</div><div class="rn-title">${s.title}</div><div class="rn-sub">${s.sub}</div>`;
+    node.onclick=()=>{
+      document.querySelectorAll('.rag-node').forEach(n=>n.classList.remove('active'));
+      node.classList.add('active');activeRag=i;
+      const box=document.getElementById('ragDetailBox');
+      box.style.display='block';
+      box.innerHTML=`<h4>${s.title} — testing detail</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
+          <div><div style="font-size:11px;font-family:var(--font-mono);color:var(--red);margin-bottom:6px;">FAILURE MODES</div><ul class="failure-list">${s.failures.map(f=>`<li>${f}</li>`).join('')}</ul></div>
+          <div><div style="font-size:11px;font-family:var(--font-mono);color:var(--teal);margin-bottom:6px;">TEST APPROACHES</div><ul class="failure-list test-list">${s.tests.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+        </div>`;
+    };
+    step.appendChild(node);stepsEl.appendChild(step);
+    if(i<RAG_STAGES.length-1){const arr=document.createElement('div');arr.className='rag-arr';arr.innerHTML='→';stepsEl.appendChild(arr);}
+  });
+}
+
+// ── RADAR CHART ────────────────────────────────────────────────────────────────
+function buildRadar(){
+  const ctx=document.getElementById('radarChart').getContext('2d');
+  new Chart(ctx,{type:'radar',data:{
+    labels:['Context relevance','Faithfulness','Answer relevance','Completeness','Conciseness'],
+    datasets:[
+      {label:'Good RAG system',data:[88,92,85,82,78],borderColor:'rgba(45,212,191,0.8)',backgroundColor:'rgba(45,212,191,0.1)',pointBackgroundColor:'#2dd4bf'},
+      {label:'Retrieval failure',data:[30,65,45,40,70],borderColor:'rgba(248,113,113,0.8)',backgroundColor:'rgba(248,113,113,0.1)',pointBackgroundColor:'#f87171'},
+      {label:'Hallucinating system',data:[85,25,50,35,80],borderColor:'rgba(245,158,11,0.8)',backgroundColor:'rgba(245,158,11,0.1)',pointBackgroundColor:'#f59e0b'}
+    ]
+  },options:{responsive:true,plugins:{legend:{labels:{color:'#9b98b0',font:{size:11}}}},scales:{r:{ticks:{color:'#5e5b72',font:{size:10},backdropColor:'transparent'},grid:{color:'rgba(255,255,255,0.08)'},pointLabels:{color:'#9b98b0',font:{size:12}},min:0,max:100}}}});
+}
+
+// ── AGENT STEPS ────────────────────────────────────────────────────────────────
+const AGENT_STEPS=[
+  {label:'Goal in',color:'rgba(124,111,255,0.15)',txtColor:'#a594ff',title:'User goal received',body:'The agent receives a high-level task: "Find the 3 most recent CI failures and summarise the root cause."',code:'goal = "Find 3 recent CI failures and summarise"\n# No single function call can do this — agent must plan',risk:null},
+  {label:'Plan',color:'rgba(45,212,191,0.12)',txtColor:'#2dd4bf',title:'LLM reasons and plans',body:'The LLM decides which tool to call and with what parameters. This is non-deterministic — different runs may choose different tool sequences.',code:'→ Reasoning: "I need CI build history first"\n→ Plan: call_tool("ci_api", query="recent failures", limit=3)',risk:'Testing risk: the plan itself is non-deterministic. The agent may take different paths on different runs — test goal completion, not specific paths.'},
+  {label:'Call tool',color:'rgba(245,158,11,0.15)',txtColor:'#fbbf24',title:'Tool execution',body:'The agent calls an external tool. Tool calls can have real-world side effects — sending emails, modifying databases, triggering deployments.',code:'result = ci_api.get_failures(limit=3)\n# Returns: [{id:"B-441",error:"OOM"}, ...]',risk:'CRITICAL testing risk: tool calls execute real side effects. Always use mock/stub tools in test environments. Never test agents against production systems.'},
+  {label:'Observe',color:'rgba(124,111,255,0.15)',txtColor:'#a594ff',title:'LLM processes result',body:'Tool result is injected back into context. LLM decides: call another tool, or return final answer. This creates a loop that may run many iterations.',code:'if needs_more_detail:\n    → call_tool("log_analyser", build_id="B-441")\nelse:\n    → generate_final_answer()',risk:null},
+  {label:'Output',color:'rgba(74,222,128,0.12)',txtColor:'#4ade80',title:'Final response',body:'After one or more tool cycles, the LLM generates the final answer. Errors in early tool calls propagate — a wrong retrieval in step 2 leads to a wrong summary.',code:'"Build B-441 failed: OOM in payment-service (heap limit 512MB)\n Build B-438 failed: flaky network mock in checkout-service"',risk:'Testing risk: multi-step error propagation. Inject failures at step 2 and verify the agent handles them gracefully rather than producing a confident wrong answer.'}
+];
+let activeAgent=0;
+function buildAgentUI(){
+  document.getElementById('agentNav').innerHTML=AGENT_STEPS.map((s,i)=>`<button class="ast-btn ${i===0?'active':''}" id="asb${i}" onclick="showAgent(${i})">${s.label}</button>`).join('');
+  renderAgentPanel();
+}
+function showAgent(i){activeAgent=i;document.querySelectorAll('.ast-btn').forEach((b,j)=>b.classList.toggle('active',j===i));renderAgentPanel();}
+function renderAgentPanel(){
+  const s=AGENT_STEPS[activeAgent];
+  document.getElementById('agentPanel').innerHTML=`<div class="agent-panel">
+    <span class="ap-label" style="background:${s.color};color:${s.txtColor}">${s.label}</span>
+    <div class="ap-title">${s.title}</div>
+    <div class="ap-body">${s.body}</div>
+    <div class="ap-code">${s.code}</div>
+    ${s.risk?`<div class="ap-risk">${s.risk}</div>`:''}
+  </div>`;
+}
+
+// ── DIFFUSION VIZ ──────────────────────────────────────────────────────────────
+let diffSeed=Math.random()*1000;
+function updateDiffusion(){
+  const steps=parseInt(document.getElementById('diffSl').value);
+  document.getElementById('diffV').textContent=steps;
+  const canvas=document.getElementById('diffCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.offsetWidth||600,H=160;
+  canvas.width=W*window.devicePixelRatio;canvas.height=H*window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
+  ctx.clearRect(0,0,W,H);
+  const progress=steps/50;
+  const rng=mulberry32(diffSeed);
+  // Draw noisy image that clears to a cleaner image as steps increase
+  for(let x=0;x<W;x+=4){
+    for(let y=0;y<H;y+=4){
+      const noise=rng();
+      const clarity=Math.pow(progress,1.5);
+      // Simulate a "test results dashboard" emerging from noise
+      const px=x/W,py=y/H;
+      let targetR=30,targetG=30,targetB=50;
+      // Purple header bar
+      if(py<0.15){targetR=80;targetG=60;targetB=200;}
+      // Green "pass" bars
+      else if(py>0.2&&py<0.45&&px>0.05&&px<0.45){targetR=20;targetG=120;targetB=80;}
+      // Red "fail" bar
+      else if(py>0.5&&py<0.65&&px>0.05&&px<0.2){targetR=160;targetG=30;targetB=30;}
+      // Chart line
+      else if(Math.abs(py-0.6-0.1*Math.sin(px*20))<0.03&&px>0.5){targetR=124;targetG=111;targetB=255;}
+      const noiseAmt=1-clarity;
+      const r=Math.min(255,Math.max(0,targetR*(1-noiseAmt)+(noise*255*noiseAmt)));
+      const g=Math.min(255,Math.max(0,targetG*(1-noiseAmt)+(noise*255*noiseAmt*0.9)));
+      const b=Math.min(255,Math.max(0,targetB*(1-noiseAmt)+(noise*255*noiseAmt)));
+      ctx.fillStyle=`rgb(${Math.round(r)},${Math.round(g)},${Math.round(b)})`;
+      ctx.fillRect(x,y,4,4);
+    }
+  }
+  const notes=['Step 1 — pure noise. Nothing is recognisable. This is the starting state of diffusion.','Steps 5–15 — rough structure emerging. Shapes and color regions appear but blurry.','Steps 20–35 — image clarifying. Composition is clear, details still soft.','Steps 40–50 — near-final quality. Details sharp. Further steps give diminishing returns.'];
+  const ni=steps<=1?0:steps<=15?1:steps<=35?2:3;
+  document.getElementById('diffNote').textContent=notes[ni]+' | Testing implication: each run uses fresh noise → same prompt, different image. Fix seed parameter for regression testing.';
+}
+function mulberry32(seed){let s=seed|0;return function(){s=s+0x6d2b79f5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+// ── FINE-TUNE CHART ────────────────────────────────────────────────────────────
+function buildFinetuneChart(){
+  const ctx=document.getElementById('finetuneChart').getContext('2d');
+  new Chart(ctx,{type:'bar',data:{
+    labels:['HR domain accuracy','Legal reasoning','Math ability','Code generation','General knowledge','Safety compliance'],
+    datasets:[
+      {label:'Before fine-tuning',data:[42,61,78,72,85,90],backgroundColor:'rgba(94,91,114,0.4)',borderColor:'rgba(94,91,114,0.6)',borderWidth:1,borderRadius:4},
+      {label:'After HR fine-tuning',data:[91,58,52,44,71,88],backgroundColor:'rgba(124,111,255,0.5)',borderColor:'rgba(124,111,255,0.8)',borderWidth:1,borderRadius:4}
+    ]
+  },options:{responsive:true,plugins:{legend:{labels:{color:'#9b98b0',font:{size:11}}}},scales:{y:{ticks:{callback:v=>v+'%',color:'#5e5b72'},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'transparent'},max:100},x:{ticks:{color:'#9b98b0',font:{size:11}},grid:{display:false},border:{color:'transparent'}}}}});
+}
+
+// ── QUIZ ──────────────────────────────────────────────────────────────────────
+const QUESTIONS=[
+  {k:'K2',topic:'Temperature',scenario:null,
+   q:'A tester sets temperature=0 before running regression tests on an LLM feature. What is the primary reason?',
+   opts:['Reduce GPU cost','Make output deterministic and reproducible','Increase response diversity','Prevent long responses'],
+   ans:1,exp:'Temperature=0 always picks the highest-probability token — fully deterministic. Essential for regression testing where the same input must produce the same output across runs.'},
+  {k:'K3',topic:'RAG pipeline',
+   scenario:'A RAG chatbot returns accurate, well-written answers — but about the wrong product tier.',
+   q:'Which RAG component is most likely the root cause?',
+   opts:['LLM hallucinating product tiers','Retriever fetching wrong-tier chunks','Tokenizer splitting query incorrectly','Reranker generating the answer directly'],
+   ans:1,exp:'The LLM is producing faithful answers — grounded in the wrong retrieved chunks. This is a retrieval failure (context relevance), not a generation/hallucination failure.'},
+  {k:'K2',topic:'Embeddings',scenario:null,
+   q:'A user searches "how to terminate my subscription" but the system fails to retrieve a doc titled "Account cancellation steps". Most likely cause?',
+   opts:['Document too short to index','Embedding model not capturing semantic similarity between the phrases','Context window too small','Reranker filtering low-confidence chunks'],
+   ans:1,exp:'Terminate subscription and account cancellation are semantically equivalent but lexically different. A poor embedding model maps them to distant vectors, causing retrieval failure despite the document existing.'},
+  {k:'K3',topic:'Agentic testing',
+   scenario:'A QA engineer testing an LLM agent accidentally triggers a real customer email during testing.',
+   q:'Which practice would BEST prevent this?',
+   opts:['Test at temperature=0','Use sandboxed mock tool implementations that simulate side effects without executing them','Test only LLM reasoning steps, not tool calls','Limit agent to one tool call per session'],
+   ans:1,exp:'Agentic systems need environment isolation. Mock/stub tools simulate the interface and return realistic responses without executing real-world side effects. This is the fundamental practice for safe agent testing.'},
+  {k:'K2',topic:'Tokenization',scenario:null,
+   q:'A system prompt contains 800 words. A user query adds 200 words. Retrieved context adds 2,000 words. The model has a 4,096-token limit. What is the testing concern?',
+   opts:['The response will be too short','Total token count may approach or exceed the context window, causing early content truncation','Temperature must be reduced to fit','The embedding model cannot process this many tokens'],
+   ans:1,exp:'Words × 1.3 ≈ tokens. 3,000 words ≈ 3,900 tokens — approaching the 4,096 limit. Content from early in the context (possibly the system prompt) may be truncated. Testers must verify behaviour at maximum context lengths.'},
+  {k:'K2',topic:'Model types',scenario:null,
+   q:'A company fine-tunes a foundation model on HR policy documents. Which regression testing approach is MOST critical?',
+   opts:['Test only the new HR-specific behaviour since that is what changed','Test that fine-tuning has not degraded base capabilities while also verifying the new HR domain behaviour','Test the tokenizer for HR terminology','Test only general knowledge questions unrelated to HR'],
+   ans:1,exp:'Fine-tuning can cause catastrophic forgetting — the model may lose general capabilities while gaining domain-specific ones. Regression must cover both: verifying new behaviour works AND existing capabilities have not degraded.'},
+  {k:'K3',topic:'Diffusion models',scenario:null,
+   q:'A tester needs to run regression tests on an image generation feature. The same prompt must produce comparable images across releases. What is the MOST critical configuration?',
+   opts:['Set temperature=0 in the image model','Fix the random seed parameter to ensure deterministic generation for regression comparison','Run the test 100 times and take the average image','Use only text-based assertions, not image comparisons'],
+   ans:1,exp:'Diffusion models sample random noise at each run — without fixing the seed, the same prompt produces different images every time. Fixing the seed enables deterministic generation, allowing regression comparison of specific image features.'},
+  {k:'K3',topic:'RAG evaluation',
+   scenario:'A RAG system has a faithfulness score of 0.35/1.0 but context relevance of 0.91/1.0.',
+   q:'What does this pattern indicate and what is the correct fix?',
+   opts:['The retriever is broken — improve the embedding model','The LLM is ignoring retrieved context and generating from training data — fix by prompt hardening or adding faithfulness guardrails','Both retriever and LLM are broken — rebuild from scratch','The evaluation framework is misconfigured'],
+   ans:1,exp:'High context relevance (0.91) means the retriever IS finding the right chunks. Low faithfulness (0.35) means the LLM is ignoring those chunks and generating from its own training data — a hallucination problem. Fix: stronger system prompt instructions to use context, or faithfulness-enforcing guardrails.'},
+  {k:'K2',topic:'Temperature',scenario:null,
+   q:'Top-p (nucleus) sampling sets p=0.9. What does this mean?',
+   opts:['90% of tokens are randomly excluded','Only tokens whose cumulative probability reaches 90% are eligible for selection','The model returns answers with 90% confidence','Temperature is automatically set to 0.9'],
+   ans:1,exp:'Top-p (nucleus) sampling includes tokens in descending probability order until their cumulative probability reaches p. At p=0.9, the smallest set of tokens whose combined probability is ≥90% forms the sampling pool. This adapts pool size to the distribution shape.'},
+  {k:'K3',topic:'Agentic testing',
+   scenario:'An LLM agent queries a database (step 2) and the database returns an error. The agent proceeds, inventing plausible-looking data, and produces a confident final answer based on the invented data.',
+   q:'Which testing technique would catch this failure mode?',
+   opts:['Perturbation testing on the user query','Fault injection — deliberately inject tool failures and assert the agent handles them gracefully rather than hallucinating','Load testing the database connection','Testing at temperature=0'],
+   ans:1,exp:'This is a fault injection / error propagation test. By deliberately injecting tool failures (simulated in the mock environment), testers verify the agent\'s error handling: it should surface the error or abstain, not silently invent data to fill the gap.'}
+];
+
+let qIdx=0,qScore=0,qAnswered=0,qResults=[];
+function renderQuiz(){
+  if(qIdx>=QUESTIONS.length){showResult();return;}
+  const q=QUESTIONS[qIdx];
+  document.getElementById('qProg').style.width=(qIdx/QUESTIONS.length*100)+'%';
+  const kC=q.k==='K3'?{bg:'rgba(245,158,11,0.15)',c:'#fbbf24'}:{bg:'rgba(45,212,191,0.12)',c:'#2dd4bf'};
+  document.getElementById('quizBody').innerHTML=`
+    <div class="q-meta">
+      <span style="font-size:12px;color:var(--text3);font-family:var(--font-mono)">Q${qIdx+1}/${QUESTIONS.length}</span>
+      <span class="k-pill" style="background:${kC.bg};color:${kC.c}">${q.k}</span>
+      <span class="topic-pill">${q.topic}</span>
+      ${qAnswered>0?`<span style="font-family:var(--font-mono);font-size:12px;color:var(--text3);margin-left:auto">${qScore}/${qAnswered}</span>`:''}
+    </div>
+    ${q.scenario?`<div class="q-scenario">${q.scenario}</div>`:''}
+    <div class="q-text">${q.q}</div>
+    <div class="q-opts">${['A','B','C','D'].map((l,i)=>`<div class="q-opt" id="qo${i}" onclick="pickOpt(${i})"><span class="opt-l">${l}</span><span>${q.opts[i]}</span></div>`).join('')}</div>
+    <div class="q-exp" id="qexp"></div>
+    <div class="quiz-nav"><button class="btn-p" id="qnxt" style="display:none" onclick="nextQ()">${qIdx<QUESTIONS.length-1?'Next →':'See results'}</button></div>`;
+}
+function pickOpt(i){
+  const q=QUESTIONS[qIdx];
+  document.querySelectorAll('.q-opt').forEach(o=>o.classList.add('locked'));
+  document.getElementById('qo'+q.ans).classList.add('correct');
+  const ok=i===q.ans;
+  if(!ok)document.getElementById('qo'+i).classList.add('wrong');
+  else qScore++;
+  qAnswered++;qResults.push({ok,topic:q.topic});
+  const e=document.getElementById('qexp');
+  e.innerHTML=`<div class="q-exp-head">${ok?'Correct':'Incorrect'} — here\'s why:</div>${q.exp}`;
+  e.classList.add('show');
+  document.getElementById('qnxt').style.display='inline-block';
+}
+function nextQ(){qIdx++;renderQuiz();}
+function showResult(){
+  document.getElementById('qProg').style.width='100%';
+  const pct=Math.round(qScore/QUESTIONS.length*100);
+  const msg=pct>=80?'Exam ready on Chapter 1':pct>=60?'Good — review missed topics':'Keep studying';
+  const wrongs=[...new Set(qResults.filter(r=>!r.ok).map(r=>r.topic))];
+  document.getElementById('quizBody').innerHTML=`<div class="result-box">
+    <div class="res-num">${qScore}/${QUESTIONS.length}</div>
+    <div class="res-msg">${msg} (${pct}%)</div>
+    ${wrongs.length?`<div style="font-size:13px;color:var(--text3);margin-bottom:14px">Review: ${wrongs.join(', ')}</div>`:''}
+    <div class="res-pills">${qResults.map((r,i)=>`<span style="font-size:12px;padding:3px 12px;border-radius:20px;font-family:var(--font-mono);background:${r.ok?'rgba(45,212,191,0.1)':'rgba(248,113,113,0.1)'};color:${r.ok?'var(--teal)':'var(--red)'}">Q${i+1}</span>`).join('')}</div>
+    <button class="btn-p" onclick="restartQuiz()" style="margin-right:8px">Retake quiz</button>
+    <a href="index.html#chapters" class="btn-o">All chapters</a>
+  </div>`;}
+function restartQuiz(){qIdx=0;qScore=0;qAnswered=0;qResults=[];renderQuiz();}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  // Temperature chart
+  const tc=document.getElementById('tempChart').getContext('2d');
+  tChart=new Chart(tc,{type:'bar',data:{labels:tempCandidates.map(c=>c.w),datasets:[{data:[],backgroundColor:'rgba(124,111,255,0.35)',borderColor:'rgba(124,111,255,0.8)',borderWidth:1.5,borderRadius:4}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(1)+'%'}}},scales:{y:{ticks:{callback:v=>v+'%',color:'#5e5b72',font:{size:11}},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'transparent'},max:100},x:{ticks:{color:'#9b98b0'},grid:{display:false},border:{color:'transparent'}}}}});
+  updateTempChart();
+  // Sampling chart
+  const sc=document.getElementById('sampChart').getContext('2d');
+  sChart=new Chart(sc,{type:'bar',data:{labels:['Token 1','Token 2','Token 3','Token 4','Token 5','Token 6','Token 7','Token 8','Token 9','Token 10'],datasets:[{data:sampProbs,backgroundColor:sampProbs.map((_,i)=>i<3?'rgba(124,111,255,0.7)':'rgba(94,91,114,0.3)'),borderRadius:4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%',color:'#5e5b72',font:{size:11}},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'transparent'}},x:{ticks:{color:'#5e5b72',font:{size:10}},grid:{display:false},border:{color:'transparent'}}}}});
+  updateSampling();
+  // Other inits
+  buildEmbUI();buildCosChart();buildRag();buildRadar();buildAgentUI();buildFinetuneChart();
+  updateDiffusion();
+  tokenize('The test result was positive');
+  renderQuiz();
+});
+</script>
+</body>
+</html>
